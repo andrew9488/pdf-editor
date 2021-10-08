@@ -2,7 +2,7 @@ import React from "react";
 import classes from "./ControlPanel.module.css"
 
 export const ControlPanel = (props) => {
-    const { pageNumber, numPages, setPageNumber, scale, setScale } = props
+    const { pageNumber, numPages, setPageNumber, scale, setScale , position} = props
 
     const isFirstPage = pageNumber === 1
     const isLastPage = pageNumber === numPages
@@ -46,6 +46,8 @@ export const ControlPanel = (props) => {
                     onClick={goToNextPage}
                 />
             </div>
+            <div>x:{position.x}</div>
+            <div>y:{position.y}</div>
             <div className={classes.panelBlock}>
                 <i
                     className={`fas fa-search-minus mx-3 ${zoomOutClass}`}
