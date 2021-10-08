@@ -1,0 +1,30 @@
+.panelContainer {
+    margin: 3px;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 16px;
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+    width: 95%;
+    height: 50px;
+}
+
+.panelBlock {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.clickable {
+    cursor: pointer;
+    margin: 3px;
+}
+
+.disabled {
+    cursor: not-allowed;
+    color: lightgray;
+    margin: 3px;
+}
