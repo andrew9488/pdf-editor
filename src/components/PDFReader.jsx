@@ -8,39 +8,32 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export const PDFReader = () => {
 
     const [scale, setScale] = useState(1.0)
+    const [height, setHeight] = useState(0)
     const [position, setPosition] = useState({
         x: 0, y: 0
     })
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
 
-    const ref = useRef()
+    const docRef = useRef(null)
+    const panelRef = useRef(null)
 
     useEffect(() => {
-        let parent = ref.current.parentNode.getBoundingClientRect()
-        document.onmouseup = () => {
-            let select = getSelection().getRangeAt(0).getBoundingClientRect()
-            const x = select.left - parent.left;
-            const y = select.top - parent.top;
-            setPosition({
-                x: x.toFixed(0),
-                y: y.toFixed(0)
-            })
-        };
-    })
+        setHeight(panelRef.current.clientHeight)
+    },[])
 
     const onDocumentLoadSuccess = ({numPages}) => {
         setNumPages(numPages)
     }
 
     const handleMouse = () => {
-        let parent = ref.current.parentNode.getBoundingClientRect()
+        let parent = docRef.current.parentNode.getBoundingClientRect()
         document.onmouseup = () => {
             let select = getSelection()
             if (select.type !== "None") {
                 let sel = select.getRangeAt(0).getBoundingClientRect()
                 const x = sel.left - parent.left;
-                const y = sel.top - 56 - parent.top;
+                const y = sel.top - height - parent.top;
                 setPosition({
                     x: x.toFixed(0),
                     y: y.toFixed(0)
@@ -57,7 +50,7 @@ export const PDFReader = () => {
                 className={classes.pdfSection}
                 onMouseUp={handleMouse}
                 // onDoubleClick={handleMouse}
-                ref={ref}
+                ref={docRef}
             >
                 <ControlPanel
                     scale={scale}
@@ -66,6 +59,7 @@ export const PDFReader = () => {
                     pageNumber={pageNumber}
                     setPageNumber={setPageNumber}
                     position={position}
+                    ref={panelRef}
                 />
                 <Document
                     file="/assets/docs/document.pdf"

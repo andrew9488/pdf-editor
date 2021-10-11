@@ -1,7 +1,7 @@
-import React from "react";
+import React,{forwardRef} from "react";
 import classes from "./ControlPanel.module.css"
 
-export const ControlPanel = (props) => {
+export const ControlPanel = forwardRef((props,ref) => {
     const { pageNumber, numPages, setPageNumber, scale, setScale , position} = props
 
     const isFirstPage = pageNumber === 1
@@ -32,7 +32,7 @@ export const ControlPanel = (props) => {
     }
 
     return (
-        <div className={classes.panelContainer}>
+        <div className={classes.panelContainer} ref={ref}>
             <div className={classes.panelBlock}>
                 <i
                     className={`fas fa-backward mx-3 ${firstPageClass}`}
@@ -61,4 +61,4 @@ export const ControlPanel = (props) => {
             </div>
         </div>
     );
-}
+})
