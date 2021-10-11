@@ -33,26 +33,21 @@ export const PDFReader = () => {
         setNumPages(numPages)
     }
 
-    // const handleMouseMove = (event) => {
-    //     setPosition({
-    //         x: event.clientX,
-    //         y: event.clientY
-    //     })
-    // }
-
-    // const onClick = (e) => {
-    //     debugger
-    //     const parent = e.target.parentNode.getBoundingClientRect();
-    //     const element = e.target.getBoundingClientRect();
-    //
-    //     const x = element.left - parent.left;
-    //     const y = element.top - parent.top;
-    //     console.log(x, y)
-    //     setPosition({
-    //         x: x.toFixed(0),
-    //         y: y.toFixed(0)
-    //     })
-    // }
+    const handleMouse = () => {
+        let parent = ref.current.parentNode.getBoundingClientRect()
+        document.onmouseup = () => {
+            let select = getSelection()
+            if (select.type !== "None") {
+                let sel = select.getRangeAt(0).getBoundingClientRect()
+                const x = sel.left - parent.left;
+                const y = sel.top - 56 - parent.top;
+                setPosition({
+                    x: x.toFixed(0),
+                    y: y.toFixed(0)
+                })
+            }
+        }
+    }
 
 
     return (
@@ -60,8 +55,8 @@ export const PDFReader = () => {
             <section
                 id="pdf-section"
                 className={classes.pdfSection}
-                // onClick={handleMouseMove}
-                // onMouseDownCapture={handleMouseMove}
+                onMouseUp={handleMouse}
+                // onDoubleClick={handleMouse}
                 ref={ref}
             >
                 <ControlPanel
