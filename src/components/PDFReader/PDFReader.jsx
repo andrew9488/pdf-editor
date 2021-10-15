@@ -1,11 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
-import testJson from "../../test.json";
-import testPdf from "../../test.pdf";
+import {canvasHelper} from "../../utils/helpers/canvasHelper";
+import {clearContext} from "../../utils/helpers/clearContext";
 import classes from "./PDFReader.module.css"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import {canvasHelper} from "../../utils/helpers/canvasHelper";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -14,8 +13,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRef = useRef()
 
-    const [pdf, setPdf] = useState(testPdf)
-    const [json, setJson] = useState(testJson)
+    const [pdf, setPdf] = useState(null)
+    const [json, setJson] = useState(null)
     const [scale, setScale] = useState(1.0)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
@@ -24,11 +23,7 @@ export const PDFReader = () => {
     const [context, setContext] = useState(null)
 
     useEffect(() => {
-        if (json && pageNumber && context) {
-            context.clearRect(0, 0, canvasSize.width, canvasSize.height)
-            let currentWords = json.filter(j => j.page === pageNumber)
-            setWords(currentWords)
-        }
+        clearContext(json, pageNumber, context, setWords, canvasSize)
     }, [pageNumber, json, context])
 
     useEffect(() => {
@@ -46,15 +41,11 @@ export const PDFReader = () => {
             height: docRef.current.clientHeight * scale,
             width: docRef.current.clientWidth * scale
         })
-        words.forEach(w => {
-            canvasHelper(context, w, scale)
-        })
+        words.forEach(w => canvasHelper(context, w, scale))
     }, [scale, words])
 
     const loadPdf = useCallback((file) => {
-        if (file) {
-            setPdf(file)
-        }
+        setPdf(file)
     }, [])
 
     return (
@@ -65,7 +56,6 @@ export const PDFReader = () => {
                 numPages={numPages}
                 pageNumber={pageNumber}
                 setPageNumber={setPageNumber}
-                file={pdf}
                 loadPdf={loadPdf}
             />
             <Document
