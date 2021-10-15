@@ -1,0 +1,13 @@
+.pdfSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position:relative;
+
+}
+
+.canvas {
+    position: absolute;
+    top: 62px;
+    left: 0;
+}

@@ -18,13 +18,9 @@
     justify-content: space-between;
 }
 
-.clickable {
+.panelBlock button {
+    margin: 3px;
+    border: none;
+    background: none;
     cursor: pointer;
-    margin: 3px;
-}
-
-.disabled {
-    cursor: not-allowed;
-    color: lightgray;
-    margin: 3px;
 }
