@@ -9,6 +9,9 @@ import classes from "./PDFReader.module.css"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import testjson from "../../test.json";
 import testpdf from "../../test.pdf";
+import {findSelectedWord} from "../../utils/helpers/findSelectedWord";
+import {Menu} from "../Menu/Menu";
+import {highlightText} from "../../utils/helpers/highlightText";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -19,12 +22,14 @@ export const PDFReader = () => {
 
     const [pdf, setPdf] = useState(testpdf)
     const [json, setJson] = useState(testjson)
-    const [scale, setScale] = useState(1.0)
+    const [scale, setScale] = useState(1.3)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [words, setWords] = useState([])
+    const [selectedWord, setSelectedWord] = useState()
     const [context, setContext] = useState(null)
+    const [clickPosition, setClickPosition] = useState({x: 0, y: 0})
     const [fetch] = useFetch(async (pdf) => {
         const response = await pdfApi.sendPdf(pdf)
         setJson(response)
@@ -39,9 +44,21 @@ export const PDFReader = () => {
         setContext(ctx)
     }, [])
 
+    useEffect(() => {
+        const word = findSelectedWord(words, clickPosition, scale)
+        if (word) {
+            setSelectedWord(word)
+        }
+    }, [clickPosition, words, scale])
+
+    useEffect(() => {
+        if (context && selectedWord) {
+            highlightText(context, "rgba(13,117,204)", selectedWord, scale, clickPosition)
+        }
+    }, [context, selectedWord, scale, clickPosition])
+
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
         setNumPages(numPages)
-
     }, [])
 
     const onRenderSuccess = useCallback(() => {
@@ -60,14 +77,12 @@ export const PDFReader = () => {
         }
     }, [])
 
-    const handleMouse = (e) => {
+    const selectWord = (e) => {
         let parent = e.currentTarget.getBoundingClientRect()
-        console.log(parent)
-        console.log(e.clientX - parent.left)
-        console.log(e.clientY - parent.top)
-        console.log(getWordAtPoint(document.body.querySelector('.react-pdf__Page__textContent'), e.clientX - parent.left, e.clientY - parent.top))
+        let x = e.clientX - parent.left
+        let y = e.clientY - parent.top
+        setClickPosition({x: x, y: y})
     }
-
 
     return (
         <div className={classes.pdfSection}>
@@ -80,68 +95,17 @@ export const PDFReader = () => {
                 loadPdf={loadPdf}
             />
             <Document
+                className={classes.document}
                 inputRef={docRef}
                 file={pdf}
                 onLoadSuccess={onDocumentLoadSuccess}
             >
                 <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
             </Document>
-            <canvas height={canvasSize.height} width={canvasSize.width} ref={canvasRef}
-                    className={classes.canvas} onMouseUp={handleMouse}/>
+            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRef}
+                    className={classes.canvas} onMouseUp={selectWord}/>
+            {selectedWord &&
+            <Menu context={context} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
         </div>
     );
 }
-
-
-function getWordAtPoint(elem, x, y) {
-    debugger
-    if(elem.nodeType == elem.TEXT_NODE) {
-        var range = elem.ownerDocument.createRange();
-        range.selectNodeContents(elem);
-        var currentPos = 0;
-        var endPos = range.endOffset;
-        while(currentPos+1 < endPos) {
-            range.setStart(elem, currentPos);
-            range.setEnd(elem, currentPos+1);
-            if(range.getBoundingClientRect().left <= x && range.getBoundingClientRect().right  >= x &&
-                range.getBoundingClientRect().top  <= y && range.getBoundingClientRect().bottom >= y) {
-                // range.expand("word");
-                var ret = range.toString();
-                range.detach();
-                return(ret);
-            }
-            currentPos += 1;
-        }
-    } else {
-        for(var i = 0; i < elem.childNodes.length; i++) {
-            var range = elem.childNodes[i].ownerDocument.createRange();
-            range.selectNodeContents(elem.childNodes[i]);
-            if(range.getBoundingClientRect().left <= x && range.getBoundingClientRect().right  >= x &&
-                range.getBoundingClientRect().top  <= y && range.getBoundingClientRect().bottom >= y) {
-                range.detach();
-                return(getWordAtPoint(elem.childNodes[i], x, y));
-            } else {
-                range.detach();
-            }
-        }
-    }
-    return(null);
-}
-// const handleMouse = () => {
-//     let parent = docRef.current.parentNode.getBoundingClientRect()
-//     document.onmouseup = () => {
-//         let select = getSelection()
-//         if (select.type !== "None") {
-//             let sel = select.getRangeAt(0).getBoundingClientRect()
-//             const x = sel.left - parent.left;
-//             const y = sel.top - height - parent.top;
-//             setPosition({
-//                 x: x.toFixed(0),
-//                 y: y.toFixed(0)
-//             })
-//         }
-//     }
-// }
-// const [position, setPosition] = useState({
-//     x: 0, y: 0
-// })

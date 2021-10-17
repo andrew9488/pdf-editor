@@ -9,7 +9,7 @@ export const LoadPDF = React.memo(({loadPdf}) => {
     }
 
     return (
-        <label className='fas fa-desktop' style={{cursor: "pointer"}}>
+        <label className='fa fa-file-pdf-o' style={{cursor: "pointer"}}>
             <input type='file' onChange={loadFile} style={{display: 'none'}}/>
         </label>
     );
