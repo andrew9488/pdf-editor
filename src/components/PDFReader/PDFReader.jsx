@@ -12,6 +12,7 @@ import testpdf from "../../test.pdf";
 import {findSelectedWord} from "../../utils/helpers/findSelectedWord";
 import {Menu} from "../Menu/Menu";
 import {highlightText} from "../../utils/helpers/highlightText";
+import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -35,18 +36,13 @@ export const PDFReader = () => {
         setJson(response)
     })
 
-    //очистка canvas после перехода на следующую страницу
-    useEffect(() => {
-        clearContextText(json, pageNumber, contextText, setWords, canvasSize)
-    }, [pageNumber, json, contextText])
-
     //установка canvas для текста
     useEffect(() => {
         const ctx = canvasRefText?.current?.getContext('2d')
         setContextText(ctx)
     }, [])
 
-    //фильтрует слова из json для определенной страницы
+    //выделяем нужно нам слово
     useEffect(() => {
         const word = findSelectedWord(words, clickPosition, scale)
         if (word) {
@@ -60,6 +56,12 @@ export const PDFReader = () => {
             highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord, scale, clickPosition)
         }
     }, [contextText, selectedWord, scale, clickPosition])
+
+    //очистка canvas после перехода на следующую страницу
+    useEffect(() => {
+        clearContextText(json, pageNumber, contextText, setWords, canvasSize)
+    }, [pageNumber, json, contextText])
+
 
     //функция которая устанавливает кол-во страниц
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
@@ -102,6 +104,9 @@ export const PDFReader = () => {
                 pageNumber={pageNumber}
                 setPageNumber={setPageNumber}
                 loadPdf={loadPdf}
+                clearSelectedWord={setSelectedWord}
+                context={contextText}
+                word={selectedWord}
             />
             <Document
                 inputRef={docRef}

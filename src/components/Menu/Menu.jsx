@@ -1,26 +1,30 @@
 import React from "react";
 import {highlightText} from "../../utils/helpers/highlightText";
 import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
+import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
+import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 import {accuracy} from "../../utils/helpers/canvasHelper";
 import boldIcon from "../../assets/bold.png";
 import underlineIcon from "../../assets/underline.png";
 import lineThroughIcon from "../../assets/line-through.png";
 import classes from "./Menu.module.css";
-import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 
 export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
 
     const underline = () => {
+        clearContextHighlight(context, word, scale)
         underlineTextDecoration(context, word, scale)
         clearSelectedWord(null)
     }
 
     const highlight = () => {
-        highlightText(context, "rgb(250,204,5,0.4)", word, scale)
+        clearContextHighlight(context, word, scale)
+        highlightText(context, "rgba(234,231,9,0.4)", word, scale)
         clearSelectedWord(null)
     }
 
     const lineThrough = () => {
+        clearContextHighlight(context, word, scale)
         lineThroughTextDecoration(context, word, scale)
         clearSelectedWord(null)
     }
@@ -51,7 +55,6 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
                     className={classes.button}>
                 <img src={lineThroughIcon} alt="зачеркнуть"/>
             </button>
-
         </div>
     );
 })
