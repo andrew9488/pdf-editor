@@ -18,7 +18,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export const PDFReader = () => {
 
     const docRef = useRef(null)
-    const canvasRef = useRef()
+    const canvasRefText = useRef()
+    const canvasRefEffects = useRef()
 
     const [pdf, setPdf] = useState(testpdf)
     const [json, setJson] = useState(testjson)
@@ -28,22 +29,32 @@ export const PDFReader = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [words, setWords] = useState([])
     const [selectedWord, setSelectedWord] = useState()
-    const [context, setContext] = useState(null)
+    const [contextText, setContextText] = useState(null)
+    const [contextEffects, setContextEffects] = useState(null)
     const [clickPosition, setClickPosition] = useState({x: 0, y: 0})
     const [fetch] = useFetch(async (pdf) => {
         const response = await pdfApi.sendPdf(pdf)
         setJson(response)
     })
 
+    //очистка canvas после перехода на следующую страницу
     useEffect(() => {
-        clearContext(json, pageNumber, context, setWords, canvasSize)
-    }, [pageNumber, json, context])
+        clearContext(json, pageNumber, contextText, setWords, canvasSize)
+    }, [pageNumber, json, contextText])
 
+    //установка canvas для текста
     useEffect(() => {
-        let ctx = canvasRef?.current?.getContext('2d');
-        setContext(ctx)
+        const ctx = canvasRefText?.current?.getContext('2d')
+        setContextText(ctx)
     }, [])
 
+    //установка canvas для эффектов
+    useEffect(() => {
+        const ctx = canvasRefEffects?.current?.getContext('2d')
+        setContextEffects(ctx)
+    }, [])
+
+    //фильтрует слова из json для определенной страницы
     useEffect(() => {
         const word = findSelectedWord(words, clickPosition, scale)
         if (word) {
@@ -52,24 +63,27 @@ export const PDFReader = () => {
     }, [clickPosition, words, scale])
 
     useEffect(() => {
-        if (context && selectedWord) {
-            highlightText(context, "rgba(13,117,204)", selectedWord, scale, clickPosition)
+        if (contextText && selectedWord) {
+            highlightText(contextText, "rgba(13,117,204)", selectedWord, scale, clickPosition)
         }
-    }, [context, selectedWord, scale, clickPosition])
+    }, [contextText, selectedWord, scale, clickPosition])
 
+    //функция которая устанавливает кол-во страниц
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
         setNumPages(numPages)
     }, [])
 
+    //заполнение canvas словами для определенной страницы после того, как отрендерится pdf файл
     const onRenderSuccess = useCallback(() => {
         setCanvasSize({
             height: docRef.current.clientHeight * scale,
             width: docRef.current.clientWidth * scale
         })
-        words.forEach(w => canvasHelper(context, w, scale))
-
+        words.forEach(w => canvasHelper(contextText, w, scale))
     }, [scale, words])
 
+
+    //загрузка pdf пользователем и отправка на сервер для получения json
     const loadPdf = useCallback(async (file) => {
         if (file) {
             setPdf(file)
@@ -77,6 +91,8 @@ export const PDFReader = () => {
         }
     }, [])
 
+
+    //определение положения клика для поиска слова
     const selectWord = (e) => {
         let parent = e.currentTarget.getBoundingClientRect()
         let x = e.clientX - parent.left
@@ -95,17 +111,17 @@ export const PDFReader = () => {
                 loadPdf={loadPdf}
             />
             <Document
-                className={classes.document}
                 inputRef={docRef}
                 file={pdf}
                 onLoadSuccess={onDocumentLoadSuccess}
             >
                 <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
             </Document>
-            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRef}
-                    className={classes.canvas} onMouseUp={selectWord}/>
+            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
+                    className={classes.canvasText} onMouseUp={selectWord}/>
+            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefEffects}/>
             {selectedWord &&
-            <Menu context={context} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
+            <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
         </div>
     );
 }

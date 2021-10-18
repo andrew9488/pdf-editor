@@ -6,13 +6,9 @@
     margin: 10px;
 }
 
-.document{
-    cursor: pointer;
-}
-
-.canvas {
+.canvasText {
     position: absolute;
     top: 62px;
     left: 0;
-    opacity: 0.3;
+    opacity: 0.5;
 }
