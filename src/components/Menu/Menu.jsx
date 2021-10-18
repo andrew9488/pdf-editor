@@ -27,6 +27,10 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
         lineThroughTextDecoration(context, word, scale)
         clearSelectedWord(null)
     }
+    const cancel = () => {
+        clearContextHighlight(context, word, scale)
+        clearSelectedWord(null)
+    }
 
     // const style = {
     //     display: "flex",
@@ -42,17 +46,20 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
 
     return (
         <div className={classes.buttonBlock}>
-            <button onClick={highlight} title="Выделение текста" aria-label='Выделение текста'
+            <button onClick={highlight} title='Выделение текста' aria-label='Выделение текста'
                     className={classes.button}>
-                <img src={boldIcon} alt="выделить"/>
+                <img src={boldIcon} alt='выделить'/>
             </button>
-            <button onClick={underline} title="Подчеркнуть текста" aria-label='Подчеркнуть текста'
+            <button onClick={underline} title='Подчеркнуть текста' aria-label='Подчеркнуть текста'
                     className={classes.button}>
-                <img src={underlineIcon} alt="подчеркнуть"/>
+                <img src={underlineIcon} alt='подчеркнуть'/>
             </button>
-            <button onClick={lineThrough} title="Зачеркнуть текста" aria-label='Зачеркнуть текста'
+            <button onClick={lineThrough} title='Зачеркнуть текста' aria-label='Зачеркнуть текста'
                     className={classes.button}>
-                <img src={lineThroughIcon} alt="зачеркнуть"/>
+                <img src={lineThroughIcon} alt='зачеркнуть'/>
+            </button>
+            <button onClick={cancel} title='Отмена действий' aria-label='Отмена действий' className={classes.button}>
+                x
             </button>
         </div>
     );
