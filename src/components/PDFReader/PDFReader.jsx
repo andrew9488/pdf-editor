@@ -39,9 +39,11 @@ export const PDFReader = () => {
 
     //установка canvas для текста
     useEffect(() => {
-        const ctx = canvasRefText?.current?.getContext('2d')
-        setContextText(ctx)
-    }, [])
+        if (!contextText) {
+            const ctx = canvasRefText?.current?.getContext('2d')
+            setContextText(ctx)
+        }
+    }, [contextText])
 
     //выделяем нужно нам слово
     useEffect(() => {
