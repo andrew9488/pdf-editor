@@ -27,11 +27,6 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
         lineThroughTextDecoration(context, word, scale)
         clearSelectedWord(null)
     }
-    const cancel = () => {
-        clearContextHighlight(context, word, scale)
-        clearSelectedWord(null)
-    }
-
     // const style = {
     //     display: "flex",
     //     alignItems: "center",
@@ -57,9 +52,6 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
             <button onClick={lineThrough} title='Зачеркнуть текста' aria-label='Зачеркнуть текста'
                     className={classes.button}>
                 <img src={lineThroughIcon} alt='зачеркнуть'/>
-            </button>
-            <button onClick={cancel} title='Отмена действий' aria-label='Отмена действий' className={classes.button}>
-                x
             </button>
         </div>
     );

@@ -1,12 +1,12 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
-import {canvasHelper} from "../../utils/helpers/canvasHelper";
+import {accuracy, canvasHelper} from "../../utils/helpers/canvasHelper";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import testjson from "../../test.json";
 import testpdf from "../../test.pdf";
-import {findSelectedWord} from "../../utils/helpers/findSelectedWord";
+import {findCanvasWord} from "../../utils/helpers/findCanvasWord";
 import {Menu} from "../Menu/Menu";
 import {highlightText} from "../../utils/helpers/highlightText";
 import classes from "./PDFReader.module.css"
@@ -35,6 +35,8 @@ export const PDFReader = () => {
         setJson(response)
     })
 
+    const [positionMouse, setPositionMouse] = useState({x: 0, y: 0})
+
     //установка canvas для текста
     useEffect(() => {
         const ctx = canvasRefText?.current?.getContext('2d')
@@ -43,7 +45,7 @@ export const PDFReader = () => {
 
     //выделяем нужно нам слово
     useEffect(() => {
-        const word = findSelectedWord(words, clickPosition, scale)
+        const word = findCanvasWord("find",words, clickPosition, scale)
         if (word) {
             setSelectedWord(word)
         }
@@ -109,6 +111,15 @@ export const PDFReader = () => {
         }
     }
 
+    const onMouseMove = (e) => {
+        let parent = e.currentTarget.getBoundingClientRect()
+        let x = e.clientX - parent.left
+        let y = e.clientY - parent.top
+        setPositionMouse({x: x, y: y})
+    }
+
+    const isTextPointer = findCanvasWord("find",words, positionMouse, scale)
+
     return (
         <div className={classes.pdfSection}>
             <ControlPanel
@@ -127,7 +138,8 @@ export const PDFReader = () => {
                 <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
             </Document>
             <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
-                    className={classes.canvasText} onMouseDown={selectWord}/>
+                    className={isTextPointer ? classes.canvasTextCursor : classes.canvasText} onMouseUp={selectWord}
+                    onMouseMove={onMouseMove}/>
             {selectedWord &&
             <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
         </div>

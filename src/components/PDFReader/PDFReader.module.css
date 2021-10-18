@@ -1,9 +1,16 @@
-.pdfSection{
+.pdfSection {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position:relative;
+    position: relative;
     margin: 10px;
+}
+
+.canvasTextCursor {
+    position: absolute;
+    top: 62px;
+    left: 0;
+    cursor: text;
 }
 
 .canvasText {

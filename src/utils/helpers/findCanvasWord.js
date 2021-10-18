@@ -1,7 +1,7 @@
 import {accuracy} from "./canvasHelper";
 
-export const findSelectedWord = (words, position, scale) => {
-    return words.find(w => {
+export const findCanvasWord = (method, words, position, scale) => {
+    return words[method](w => {
         const startX = w.coordinates[0] * scale
         const endX = w.coordinates[2] * scale
         const startY = (accuracy - w.coordinates[1]) * scale
