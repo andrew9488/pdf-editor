@@ -11,6 +11,7 @@ import {Menu} from "../Menu/Menu";
 import {highlightText} from "../../utils/helpers/highlightText";
 import classes from "./PDFReader.module.css"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -95,12 +96,17 @@ export const PDFReader = () => {
     }, [])
 
 
-    //определение положения клика для поиска слова
+    //определение положения клика для поиска словад
     const selectWord = (e) => {
-        let parent = e.currentTarget.getBoundingClientRect()
-        let x = e.clientX - parent.left
-        let y = e.clientY - parent.top
-        setClickPosition({x: x, y: y})
+        if (!selectedWord) {
+            let parent = e.currentTarget.getBoundingClientRect()
+            let x = e.clientX - parent.left
+            let y = e.clientY - parent.top
+            setClickPosition({x: x, y: y})
+        } else {
+            clearContextHighlight(contextText, selectedWord, scale)
+            setSelectedWord(null)
+        }
     }
 
     return (
@@ -121,7 +127,7 @@ export const PDFReader = () => {
                 <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
             </Document>
             <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
-                    className={classes.canvasText} onMouseUp={selectWord}/>
+                    className={classes.canvasText} onMouseDown={selectWord}/>
             {selectedWord &&
             <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
         </div>
