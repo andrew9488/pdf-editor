@@ -33,7 +33,7 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
         background: "black",
         padding: "1px",
         borderRadius: "3px",
-        top: `${(accuracy - word.coordinates[3] + 25) * scale}px`,
+        top: `${(accuracy - word.coordinates[3] + 28) * scale}px`,
         left: `${(word.coordinates[2] + word.coordinates[0]) * scale / 2}px`
     }
 

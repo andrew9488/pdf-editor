@@ -22,7 +22,7 @@ export const PDFReader = () => {
 
     const [pdf, setPdf] = useState(testpdf)
     const [json, setJson] = useState(testjson)
-    const [scale, setScale] = useState(1.3)
+    const [scale, setScale] = useState(1.2)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
