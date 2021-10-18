@@ -54,6 +54,7 @@ export const PDFReader = () => {
         }
     }, [clickPosition, words, scale])
 
+    //выделение текста при нажатии на слово
     useEffect(() => {
         if (contextText && selectedWord) {
             highlightText(contextText, "rgba(13,117,204)", selectedWord, scale, clickPosition)
