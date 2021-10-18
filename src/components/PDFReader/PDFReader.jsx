@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
 import {canvasHelper} from "../../utils/helpers/canvasHelper";
-import {clearContext} from "../../utils/helpers/clearContext";
+import {clearContextText} from "../../utils/helpers/clearContextText";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css"
@@ -19,7 +19,6 @@ export const PDFReader = () => {
 
     const docRef = useRef(null)
     const canvasRefText = useRef()
-    const canvasRefEffects = useRef()
 
     const [pdf, setPdf] = useState(testpdf)
     const [json, setJson] = useState(testjson)
@@ -30,7 +29,6 @@ export const PDFReader = () => {
     const [words, setWords] = useState([])
     const [selectedWord, setSelectedWord] = useState()
     const [contextText, setContextText] = useState(null)
-    const [contextEffects, setContextEffects] = useState(null)
     const [clickPosition, setClickPosition] = useState({x: 0, y: 0})
     const [fetch] = useFetch(async (pdf) => {
         const response = await pdfApi.sendPdf(pdf)
@@ -39,19 +37,13 @@ export const PDFReader = () => {
 
     //очистка canvas после перехода на следующую страницу
     useEffect(() => {
-        clearContext(json, pageNumber, contextText, setWords, canvasSize)
+        clearContextText(json, pageNumber, contextText, setWords, canvasSize)
     }, [pageNumber, json, contextText])
 
     //установка canvas для текста
     useEffect(() => {
         const ctx = canvasRefText?.current?.getContext('2d')
         setContextText(ctx)
-    }, [])
-
-    //установка canvas для эффектов
-    useEffect(() => {
-        const ctx = canvasRefEffects?.current?.getContext('2d')
-        setContextEffects(ctx)
     }, [])
 
     //фильтрует слова из json для определенной страницы
@@ -119,7 +111,6 @@ export const PDFReader = () => {
             </Document>
             <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
                     className={classes.canvasText} onMouseUp={selectWord}/>
-            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefEffects}/>
             {selectedWord &&
             <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
         </div>
