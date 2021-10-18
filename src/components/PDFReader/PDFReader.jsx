@@ -26,7 +26,7 @@ export const PDFReader = () => {
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [words, setWords] = useState([])
-    const [selectedWord, setSelectedWord] = useState()
+    const [selectedWord, setSelectedWord] = useState(null)
     const [contextText, setContextText] = useState(null)
     const [clickPosition, setClickPosition] = useState({x: 0, y: 0})
     const [fetch] = useFetch(async (pdf) => {
@@ -51,14 +51,9 @@ export const PDFReader = () => {
     //выделение текста при нажатии на слово
     useEffect(() => {
         if (contextText && selectedWord) {
-            highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord, scale, clickPosition)
+            highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord, scale)
         }
     }, [contextText, selectedWord, scale, clickPosition])
-
-    //очистка canvas после перехода на следующую страницу
-    // useEffect(() => {
-    //     clearContextText(json, pageNumber, contextText, setWords, canvasSize)
-    // }, [pageNumber, json, contextText])
 
     //очистка canvas после перехода на следующую страницу
     useEffect(() => {
@@ -70,10 +65,11 @@ export const PDFReader = () => {
 
     //берет из json нужные слова определенной страницы для отрисовки
     useEffect(() => {
-        let currentWords = json.filter(j => j.page === pageNumber)
-        setWords(currentWords)
+        if (json) {
+            let currentWords = json.filter(j => j.page === pageNumber)
+            setWords(currentWords)
+        }
     }, [pageNumber, json])
-
 
     //функция которая устанавливает кол-во страниц
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
