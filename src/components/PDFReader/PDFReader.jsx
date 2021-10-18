@@ -2,17 +2,15 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
 import {canvasHelper} from "../../utils/helpers/canvasHelper";
-import {clearContextText} from "../../utils/helpers/clearContextText";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
-import classes from "./PDFReader.module.css"
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import testjson from "../../test.json";
 import testpdf from "../../test.pdf";
 import {findSelectedWord} from "../../utils/helpers/findSelectedWord";
 import {Menu} from "../Menu/Menu";
 import {highlightText} from "../../utils/helpers/highlightText";
-import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
+import classes from "./PDFReader.module.css"
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -23,7 +21,7 @@ export const PDFReader = () => {
 
     const [pdf, setPdf] = useState(testpdf)
     const [json, setJson] = useState(testjson)
-    const [scale, setScale] = useState(1.2)
+    const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
@@ -58,9 +56,23 @@ export const PDFReader = () => {
     }, [contextText, selectedWord, scale, clickPosition])
 
     //очистка canvas после перехода на следующую страницу
+    // useEffect(() => {
+    //     clearContextText(json, pageNumber, contextText, setWords, canvasSize)
+    // }, [pageNumber, json, contextText])
+
+    //очистка canvas после перехода на следующую страницу
     useEffect(() => {
-        clearContextText(json, pageNumber, contextText, setWords, canvasSize)
-    }, [pageNumber, json, contextText])
+        if (contextText) {
+            contextText.clearRect(0, 0, canvasSize.width, canvasSize.height)
+            setSelectedWord(null)
+        }
+    }, [pageNumber, canvasSize])
+
+    //берет из json нужные слова определенной страницы для отрисовки
+    useEffect(() => {
+        let currentWords = json.filter(j => j.page === pageNumber)
+        setWords(currentWords)
+    }, [pageNumber, json])
 
 
     //функция которая устанавливает кол-во страниц
@@ -104,9 +116,6 @@ export const PDFReader = () => {
                 pageNumber={pageNumber}
                 setPageNumber={setPageNumber}
                 loadPdf={loadPdf}
-                clearSelectedWord={setSelectedWord}
-                context={contextText}
-                word={selectedWord}
             />
             <Document
                 inputRef={docRef}

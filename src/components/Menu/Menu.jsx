@@ -3,7 +3,6 @@ import {highlightText} from "../../utils/helpers/highlightText";
 import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
 import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
-import {accuracy} from "../../utils/helpers/canvasHelper";
 import boldIcon from "../../assets/bold.png";
 import underlineIcon from "../../assets/underline.png";
 import lineThroughIcon from "../../assets/line-through.png";
@@ -19,7 +18,7 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
 
     const highlight = () => {
         clearContextHighlight(context, word, scale)
-        highlightText(context, "rgba(234,231,9,0.4)", word, scale)
+        highlightText(context, "rgba(234,231,9,0.6)", word, scale)
         clearSelectedWord(null)
     }
 
@@ -29,20 +28,20 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
         clearSelectedWord(null)
     }
 
-    const style = {
-        display: "flex",
-        alignItems: "center",
-        position: "absolute",
-        border: "1px solid black",
-        background: "black",
-        padding: "1px",
-        borderRadius: "3px",
-        top: `${(accuracy - word.coordinates[3] + 28) * scale}px`,
-        left: `${(word.coordinates[2] + word.coordinates[0]) * scale / 2}px`
-    }
+    // const style = {
+    //     display: "flex",
+    //     alignItems: "center",
+    //     position: "absolute",
+    //     border: "1px solid black",
+    //     background: "black",
+    //     padding: "1px",
+    //     borderRadius: "3px",
+    //     top: `${(accuracy - word.coordinates[3] + 28) * scale}px`,
+    //     left: `${((word.coordinates[2] + word.coordinates[0]) * scale) / 2}px`
+    // }
 
     return (
-        <div style={style}>
+        <div className={classes.buttonBlock}>
             <button onClick={highlight} title="Выделение текста" aria-label='Выделение текста'
                     className={classes.button}>
                 <img src={boldIcon} alt="выделить"/>
