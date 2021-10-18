@@ -16,7 +16,7 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
     }
 
     const highlight = () => {
-        highlightText(context, "rgb(250,204,5)", word, scale)
+        highlightText(context, "rgb(250,204,5,0.4)", word, scale)
         clearSelectedWord(null)
     }
 
