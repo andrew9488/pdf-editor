@@ -69,7 +69,7 @@ export const PDFReader = () => {
             contextText.clearRect(0, 0, canvasSize.width, canvasSize.height)
             setSelectedWord(null)
             const effects = getEffectsFromSessionStorage(pageNumber)
-            effects.forEach(e => {
+            effects && effects.forEach(e => {
                 if (e.type === "underline") {
                     underlineTextDecoration(contextText, e.color, e.coordinates, scale)
                 } else if (e.type === "highlight") {
