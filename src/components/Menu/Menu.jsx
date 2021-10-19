@@ -7,37 +7,30 @@ import boldIcon from "../../assets/bold.png";
 import underlineIcon from "../../assets/underline.png";
 import lineThroughIcon from "../../assets/line-through.png";
 import classes from "./Menu.module.css";
+import {setEffectsToSessionStorage} from "../../utils/helpers/sessionStorageHelper";
 
 export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
 
     const underline = () => {
         clearContextHighlight(context, word, scale)
-        underlineTextDecoration(context, word, scale)
+        underlineTextDecoration(context, "rgb(17,17,17)", word, scale)
+        setEffectsToSessionStorage(context, word, "rgb(17,17,17)", "underline", scale)
         clearSelectedWord(null)
     }
 
     const highlight = () => {
         clearContextHighlight(context, word, scale)
         highlightText(context, "rgba(234,231,9,0.6)", word, scale)
+        setEffectsToSessionStorage(context, word, "rgba(234,231,9,0.6)", "highlight", scale)
         clearSelectedWord(null)
     }
 
     const lineThrough = () => {
         clearContextHighlight(context, word, scale)
-        lineThroughTextDecoration(context, word, scale)
+        lineThroughTextDecoration(context, "rgb(255,0,11)", word, scale)
+        setEffectsToSessionStorage(context, word, "rgb(255,0,11)", "lineThrough", scale)
         clearSelectedWord(null)
     }
-    // const style = {
-    //     display: "flex",
-    //     alignItems: "center",
-    //     position: "absolute",
-    //     border: "1px solid black",
-    //     background: "black",
-    //     padding: "1px",
-    //     borderRadius: "3px",
-    //     top: `${(accuracy - word.coordinates[3] + 28) * scale}px`,
-    //     left: `${((word.coordinates[2] + word.coordinates[0]) * scale) / 2}px`
-    // }
 
     return (
         <div className={classes.buttonBlock}>

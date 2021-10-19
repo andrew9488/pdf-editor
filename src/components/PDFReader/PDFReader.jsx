@@ -8,11 +8,12 @@ import {findCanvasWord} from "../../utils/helpers/findCanvasWord";
 import {highlightText} from "../../utils/helpers/highlightText";
 import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 import {getCoordinates} from "../../utils/helpers/getCoordinates";
-import {canvasHelper} from "../../utils/helpers/canvasHelper";
+import {accuracy, canvasHelper} from "../../utils/helpers/canvasHelper";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import {getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -75,6 +76,10 @@ export const PDFReader = () => {
             setWords(currentWords)
         }
     }, [pageNumber, json])
+
+    useEffect(() => {
+        let effects = getEffectsFromSessionStorage(pageNumber)
+    }, [pageNumber])
 
     //функция которая устанавливает кол-во страниц
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
