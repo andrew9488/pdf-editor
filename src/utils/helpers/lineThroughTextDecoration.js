@@ -1,11 +1,11 @@
 import {accuracy} from "./canvasHelper";
 
-export const lineThroughTextDecoration = (context, color, word, scale) => {
+export const lineThroughTextDecoration = (context, color, coordinates, scale) => {
     context.beginPath()
     context.lineWidth = '1'
     context.strokeStyle = color
-    const y = ((accuracy - (word.coordinates[3] + word.coordinates[1]) / 2) + 3)
-    context.moveTo(word.coordinates[0] * scale, y * scale)
-    context.lineTo(word.coordinates[2] * scale, y * scale)
+    const y = ((accuracy - (coordinates[3] + coordinates[1]) / 2) + 3)
+    context.moveTo(coordinates[0] * scale, y * scale)
+    context.lineTo(coordinates[2] * scale, y * scale)
     context.stroke()
 }

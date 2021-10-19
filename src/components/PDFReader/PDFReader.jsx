@@ -14,6 +14,8 @@ import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import {getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
+import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
+import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -57,7 +59,7 @@ export const PDFReader = () => {
     //выделение текста при нажатии на слово
     useEffect(() => {
         if (contextText && selectedWord) {
-            highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord, scale)
+            highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord.coordinates, scale)
         }
     }, [contextText, selectedWord, scale, clickPosition])
 
@@ -66,8 +68,18 @@ export const PDFReader = () => {
         if (contextText) {
             contextText.clearRect(0, 0, canvasSize.width, canvasSize.height)
             setSelectedWord(null)
+            const effects = getEffectsFromSessionStorage(pageNumber)
+            effects.forEach(e => {
+                if (e.type === "underline") {
+                    underlineTextDecoration(contextText, e.color, e.coordinates, scale)
+                } else if (e.type === "highlight") {
+                    highlightText(contextText, e.color, e.coordinates, scale)
+                } else {
+                    lineThroughTextDecoration(contextText, e.color, e.coordinates, scale)
+                }
+            })
         }
-    }, [pageNumber, canvasSize])
+    }, [pageNumber, canvasSize, scale])
 
     //берет из json нужные слова определенной страницы для отрисовки
     useEffect(() => {
@@ -76,10 +88,6 @@ export const PDFReader = () => {
             setWords(currentWords)
         }
     }, [pageNumber, json])
-
-    useEffect(() => {
-        let effects = getEffectsFromSessionStorage(pageNumber)
-    }, [pageNumber])
 
     //функция которая устанавливает кол-во страниц
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
@@ -114,7 +122,7 @@ export const PDFReader = () => {
             if (!selectedWord) {
                 getCoordinates(e, parent, setClickPosition)
             } else {
-                clearContextHighlight(contextText, selectedWord, scale)
+                clearContextHighlight(contextText, selectedWord.coordinates, scale)
                 setSelectedWord(null)
             }
         }

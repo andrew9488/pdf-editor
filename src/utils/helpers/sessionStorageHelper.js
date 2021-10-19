@@ -1,11 +1,9 @@
-export const setEffectsToSessionStorage = (context, word, color, type, scale) => {
+export const setEffectsToSessionStorage = (word, color, type) => {
     const effect = {
         page: word.page,
-        context: context,
         color: color,
         coordinates: word.coordinates,
         type: type,
-        scale: scale
     }
     let effects = JSON.parse(sessionStorage.getItem('effects'))
     if (effects === null) {

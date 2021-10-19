@@ -12,23 +12,23 @@ import {setEffectsToSessionStorage} from "../../utils/helpers/sessionStorageHelp
 export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
 
     const underline = () => {
-        clearContextHighlight(context, word, scale)
-        underlineTextDecoration(context, "rgb(17,17,17)", word, scale)
-        setEffectsToSessionStorage(context, word, "rgb(17,17,17)", "underline", scale)
+        clearContextHighlight(context, word.coordinates, scale)
+        underlineTextDecoration(context, "rgb(17,17,17)", word.coordinates, scale)
+        setEffectsToSessionStorage(word, "rgb(17,17,17)", "underline")
         clearSelectedWord(null)
     }
 
     const highlight = () => {
-        clearContextHighlight(context, word, scale)
-        highlightText(context, "rgba(234,231,9,0.6)", word, scale)
-        setEffectsToSessionStorage(context, word, "rgba(234,231,9,0.6)", "highlight", scale)
+        clearContextHighlight(context, word.coordinates, scale)
+        highlightText(context, "rgba(234,231,9,0.6)", word.coordinates, scale)
+        setEffectsToSessionStorage(word, "rgba(234,231,9,0.6)", "highlight")
         clearSelectedWord(null)
     }
 
     const lineThrough = () => {
-        clearContextHighlight(context, word, scale)
-        lineThroughTextDecoration(context, "rgb(255,0,11)", word, scale)
-        setEffectsToSessionStorage(context, word, "rgb(255,0,11)", "lineThrough", scale)
+        clearContextHighlight(context, word.coordinates, scale)
+        lineThroughTextDecoration(context, "rgb(255,0,11)", word.coordinates, scale)
+        setEffectsToSessionStorage(word, "rgb(255,0,11)", "lineThrough")
         clearSelectedWord(null)
     }
 
