@@ -11,7 +11,6 @@ const instance = axios.create({
 
 export const pdfApi = {
     sendPdf(file) {
-        debugger
         return instance.post('converter/convertation-pdf-to-json/', {file})
             .then(response => response.data)
     }

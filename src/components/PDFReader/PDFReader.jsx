@@ -14,6 +14,8 @@ import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import testJSON from "../../test.json"
+import testPDF from "../../test.pdf"
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -22,8 +24,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRefText = useRef()
 
-    const [pdf, setPdf] = useState(null)
-    const [json, setJson] = useState(null)
+    const [pdf, setPdf] = useState(testPDF)
+    const [json, setJson] = useState(testJSON)
     const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
