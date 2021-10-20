@@ -2,20 +2,18 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
 import {Menu} from "../Menu/Menu";
-import testjson from "../../test.json";
-import testpdf from "../../test.pdf";
+import {getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
+import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
+import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 import {findCanvasWord} from "../../utils/helpers/findCanvasWord";
 import {highlightText} from "../../utils/helpers/highlightText";
 import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 import {getCoordinates} from "../../utils/helpers/getCoordinates";
-import {accuracy, canvasHelper} from "../../utils/helpers/canvasHelper";
+import {canvasHelper} from "../../utils/helpers/canvasHelper";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import {getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
-import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
-import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -24,8 +22,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRefText = useRef()
 
-    const [pdf, setPdf] = useState(testpdf)
-    const [json, setJson] = useState(testjson)
+    const [pdf, setPdf] = useState(null)
+    const [json, setJson] = useState(null)
     const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
@@ -35,8 +33,8 @@ export const PDFReader = () => {
     const [contextText, setContextText] = useState(null)
     const [clickPosition, setClickPosition] = useState({x: 0, y: 0})
     const [positionMouse, setPositionMouse] = useState({x: 0, y: 0})
-    const [fetch] = useFetch(async (pdf) => {
-        const response = await pdfApi.sendPdf(pdf)
+    const [fetch, error] = useFetch(async (file) => {
+        const response = await pdfApi.sendPdf(file)
         setJson(response)
     })
 
@@ -140,18 +138,24 @@ export const PDFReader = () => {
                 setPageNumber={setPageNumber}
                 loadPdf={loadPdf}
             />
-            <Document
-                inputRef={docRef}
-                file={pdf}
-                onLoadSuccess={onDocumentLoadSuccess}
-            >
-                <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
-            </Document>
-            <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
-                    className={isTextPointer ? classes.canvasTextCursor : classes.canvasText} onMouseUp={onMouseAction}
-                    onMouseMove={onMouseAction}/>
-            {selectedWord &&
-            <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
+            {error
+                ? <h1>{error}</h1>
+                : <>
+                    <Document
+                        inputRef={docRef}
+                        file={pdf}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                    >
+                        <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
+                    </Document>
+                    <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
+                            className={isTextPointer ? classes.canvasTextCursor : classes.canvasText}
+                            onMouseUp={onMouseAction}
+                            onMouseMove={onMouseAction}/>
+                    {selectedWord &&
+                    <Menu context={contextText} word={selectedWord} scale={scale} clearSelectedWord={setSelectedWord}/>}
+                </>
+            }
         </div>
     );
 }

@@ -4,7 +4,6 @@ const instance = axios.create({
     baseURL: 'https://linkedin-parser.fir.by/api/v1/',
     headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
     }
 })
 
