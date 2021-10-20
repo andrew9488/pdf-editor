@@ -23,3 +23,7 @@ export const getEffectsFromSessionStorage = (page) => {
         return effectsCanvas[page]
     }
 }
+
+export const clearSessionStorage = () => {
+    sessionStorage.clear()
+}

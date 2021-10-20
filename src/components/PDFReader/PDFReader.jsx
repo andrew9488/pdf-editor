@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
 import {Menu} from "../Menu/Menu";
-import {getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
+import {clearSessionStorage, getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
 import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
 import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 import {findCanvasWord} from "../../utils/helpers/findCanvasWord";
@@ -107,6 +107,7 @@ export const PDFReader = () => {
         if (file) {
             setPdf(file)
             fetch(file)
+            clearSessionStorage()
         }
     }, [])
 
