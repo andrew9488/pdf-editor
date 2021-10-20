@@ -105,7 +105,7 @@ export const PDFReader = () => {
 
 
     //загрузка pdf пользователем и отправка на сервер для получения json
-    const loadPdf = useCallback(async (file) => {
+    const loadPdf = useCallback((file) => {
         if (file) {
             setPdf(file)
             fetch(file)
