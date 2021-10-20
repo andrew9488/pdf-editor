@@ -24,8 +24,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRefText = useRef()
 
-    const [pdf, setPdf] = useState(testPDF)
-    const [json, setJson] = useState(testJSON)
+    const [pdf, setPdf] = useState(null)
+    const [json, setJson] = useState(null)
     const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
@@ -59,7 +59,7 @@ export const PDFReader = () => {
     //выделение текста при нажатии на слово
     useEffect(() => {
         if (contextText && selectedWord) {
-            highlightText(contextText, "rgba(13,117,204,0.4)", selectedWord.coordinates, scale)
+            highlightText(contextText, "rgba(22,135,231,0.4)", selectedWord.coordinates, scale)
         }
     }, [contextText, selectedWord, scale, clickPosition])
 
@@ -103,7 +103,6 @@ export const PDFReader = () => {
         words.forEach(w => canvasHelper(contextText, w, scale))
     }, [scale, words])
 
-
     //загрузка pdf пользователем и отправка на сервер для получения json
     const loadPdf = useCallback((file) => {
         if (file) {
@@ -112,7 +111,6 @@ export const PDFReader = () => {
             clearSessionStorage()
         }
     }, [])
-
 
     //определение положения клика для поиска словад и положения мыши
     const onMouseAction = (e) => {
