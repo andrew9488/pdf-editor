@@ -5,8 +5,6 @@ const instance = axios.create({
     withCredentials: false,
     headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/pdf',
-        'Accept': 'application/pdf',
     }
 })
 
