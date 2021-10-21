@@ -28,8 +28,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRefText = useRef()
 
-    const [pdf, setPdf] = useState(testPDF)
-    const [json, setJson] = useState(testJSON)
+    const [pdf, setPdf] = useState(null)
+    const [json, setJson] = useState(null)
     const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
