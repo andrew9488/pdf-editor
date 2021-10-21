@@ -2,7 +2,11 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Document, Page, pdfjs} from "react-pdf";
 import {ControlPanel} from "../ControlPanel/ControlPanel";
 import {Menu} from "../Menu/Menu";
-import {clearSessionStorage, getEffectsFromSessionStorage} from "../../utils/helpers/sessionStorageHelper";
+import {
+    clearSessionStorage,
+    getEffectFromSessionStorageForSelectedWord,
+    getEffectsFromSessionStorage
+} from "../../utils/helpers/sessionStorageHelper";
 import {underlineTextDecoration} from "../../utils/helpers/underlineTextDecoration";
 import {lineThroughTextDecoration} from "../../utils/helpers/lineThroughTextDecoration";
 import {findCanvasWord} from "../../utils/helpers/findCanvasWord";
@@ -24,8 +28,8 @@ export const PDFReader = () => {
     const docRef = useRef(null)
     const canvasRefText = useRef()
 
-    const [pdf, setPdf] = useState(null)
-    const [json, setJson] = useState(null)
+    const [pdf, setPdf] = useState(testPDF)
+    const [json, setJson] = useState(testJSON)
     const [scale, setScale] = useState(1.5)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
@@ -122,6 +126,16 @@ export const PDFReader = () => {
                 getCoordinates(e, parent, setClickPosition)
             } else {
                 clearContextHighlight(contextText, selectedWord.coordinates, scale)
+                const effect = getEffectFromSessionStorageForSelectedWord(selectedWord, pageNumber)
+                if (effect) {
+                    if (effect.type === "underline") {
+                        underlineTextDecoration(contextText, effect.color, effect.coordinates, scale)
+                    } else if (effect.type === "highlight") {
+                        highlightText(contextText, effect.color, effect.coordinates, scale)
+                    } else {
+                        lineThroughTextDecoration(contextText, effect.color, effect.coordinates, scale)
+                    }
+                }
                 setSelectedWord(null)
             }
         }

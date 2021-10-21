@@ -25,6 +25,13 @@ export const getEffectsFromSessionStorage = (page) => {
     }
 }
 
+export const getEffectFromSessionStorageForSelectedWord = (word, page) => {
+    let effects = sessionStorage.getItem('effects')
+    if (effects) {
+        let effectsCanvas = JSON.parse(effects)
+        return effectsCanvas[page].find(e => (e.coordinates[0] === word.coordinates[0] && e.coordinates[1] === word.coordinates[1] && e.coordinates[2] === word.coordinates[2] && e.coordinates[3] === word.coordinates[3]))
+    }
+}
 export const clearSessionStorage = () => {
     sessionStorage.clear()
 }
