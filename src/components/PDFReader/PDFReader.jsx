@@ -18,8 +18,6 @@ import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import testJSON from "../../test.json"
-import testPDF from "../../test.pdf"
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
