@@ -14,6 +14,7 @@ import {highlightText} from "../../utils/helpers/highlightText";
 import {clearContextHighlight} from "../../utils/helpers/clearContextHighlight";
 import {getCoordinates} from "../../utils/helpers/getCoordinates";
 import {canvasHelper} from "../../utils/helpers/canvasHelper";
+import {fixWordCoordinates} from "../../utils/helpers/fixWordCoordinates";
 import {useFetch} from "../../utils/hooks/useFetch";
 import {pdfApi} from "../../api/api";
 import classes from "./PDFReader.module.css";
@@ -28,7 +29,7 @@ export const PDFReader = () => {
 
     const [pdf, setPdf] = useState(null)
     const [json, setJson] = useState(null)
-    const [scale, setScale] = useState(1.5)
+    const [scale, setScale] = useState(1.0)
     const [canvasSize, setCanvasSize] = useState({height: 0, width: 0})
     const [numPages, setNumPages] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
@@ -42,7 +43,7 @@ export const PDFReader = () => {
         setJson(response)
     })
 
-    //установка canvas для текста
+    //set canvas for rendering text
     useEffect(() => {
         if (!contextText) {
             const ctx = canvasRefText?.current?.getContext('2d')
@@ -50,26 +51,28 @@ export const PDFReader = () => {
         }
     }, [contextText])
 
-    //выделяем нужно нам слово
+    // set selected word
     useEffect(() => {
-        const word = findCanvasWord('find', words, clickPosition, scale)
+        const word = findCanvasWord('find', words, clickPosition)
         if (word) {
             setSelectedWord(word)
         }
     }, [clickPosition, words, scale])
 
-    //выделение текста при нажатии на слово
+    //highlight selected word by blue color
     useEffect(() => {
         if (contextText && selectedWord) {
+            clearContextHighlight(contextText, selectedWord.coordinates, scale)
             highlightText(contextText, "rgba(22,135,231,0.4)", selectedWord.coordinates, scale)
         }
     }, [contextText, selectedWord, scale, clickPosition])
 
-    //очистка canvas после перехода на следующую страницу
+    //clear canvas after go to the next page and apply canvas effects for need
     useEffect(() => {
         if (contextText) {
             contextText.clearRect(0, 0, canvasSize.width, canvasSize.height)
             setSelectedWord(null)
+            setClickPosition({x: 0, y: 0})
             const effects = getEffectsFromSessionStorage(pageNumber)
             effects && effects.forEach(e => {
                 if (e.type === "underline") {
@@ -83,29 +86,33 @@ export const PDFReader = () => {
         }
     }, [pageNumber, canvasSize, scale])
 
-    //берет из json нужные слова определенной страницы для отрисовки
+    //filter json file and take words for current page and convert coordinates into px
     useEffect(() => {
-        if (json) {
-            let currentWords = json.filter(j => j.page === pageNumber)
+        if (canvasSize && json) {
+            let currentWords = json.filter(j => j.page === pageNumber).map(w => ({
+                ...w,
+                coordinates: fixWordCoordinates(w.coordinates, canvasSize)
+            }))
+            console.log(currentWords)
             setWords(currentWords)
         }
-    }, [pageNumber, json])
+    }, [pageNumber, json, canvasSize])
 
-    //функция которая устанавливает кол-во страниц
+    //function set numbers of pages
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
         setNumPages(numPages)
     }, [])
 
-    //заполнение canvas словами для определенной страницы после того, как отрендерится pdf файл
+    //set canvas size and render canvas with needed words after pdf file rendering
     const onRenderSuccess = useCallback(() => {
         setCanvasSize({
-            height: docRef.current.clientHeight * scale,
-            width: docRef.current.clientWidth * scale
+            height: docRef.current.clientHeight,
+            width: docRef.current.clientWidth
         })
-        words.forEach(w => canvasHelper(contextText, w, scale))
-    }, [scale, words])
+        words.forEach(w => canvasHelper(contextText, w))
+    }, [words])
 
-    //загрузка pdf пользователем и отправка на сервер для получения json
+    //download pdf file, request to server for get json file and clear session storage
     const loadPdf = useCallback((file) => {
         if (file) {
             setPdf(file)
@@ -114,7 +121,7 @@ export const PDFReader = () => {
         }
     }, [])
 
-    //определение положения клика для поиска словад и положения мыши
+    // identify position click mouse for find word and apply needed effect if it required
     const onMouseAction = (e) => {
         let parent = e.currentTarget.getBoundingClientRect()
         if (e._reactName === 'onMouseMove') {
@@ -139,7 +146,7 @@ export const PDFReader = () => {
         }
     }
 
-    const isTextPointer = findCanvasWord('some', words, positionMouse, scale)
+    const isTextPointer = findCanvasWord('some', words, positionMouse)
 
     return (
         <div className={classes.pdfSection}>
