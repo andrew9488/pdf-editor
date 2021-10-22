@@ -53,11 +53,11 @@ export const PDFReader = () => {
 
     // set selected word
     useEffect(() => {
-        const word = findCanvasWord('find', words, clickPosition)
-        if (word) {
+        if (words) {
+            const word = findCanvasWord('find', words, clickPosition)
             setSelectedWord(word)
         }
-    }, [clickPosition, words, scale])
+    }, [clickPosition, words])
 
     //highlight selected word by blue color
     useEffect(() => {
