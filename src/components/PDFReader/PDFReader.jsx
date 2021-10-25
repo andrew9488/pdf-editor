@@ -74,17 +74,25 @@ export const PDFReader = () => {
             setSelectedWord(null)
             setClickPosition({x: 0, y: 0})
             const effects = getEffectsFromSessionStorage(pageNumber)
-            effects && effects.forEach(e => {
+            const fixEffects = effects && effects.map(e => ({
+                ...e,
+                coordinates: e.coordinates.map(c => e.scale === 1 ? c * scale : (c / e.scale) * scale)
+            }))
+            fixEffects && fixEffects.forEach(e => {
                 if (e.type === "underline") {
-                    underlineTextDecoration(contextText, e.color, e.coordinates, scale)
+                    underlineTextDecoration(contextText, e.color, e.coordinates)
                 } else if (e.type === "highlight") {
-                    highlightText(contextText, e.color, e.coordinates, scale)
+                    highlightText(contextText, e.color, e.coordinates)
                 } else {
-                    lineThroughTextDecoration(contextText, e.color, e.coordinates, scale)
+                    lineThroughTextDecoration(contextText, e.color, e.coordinates)
                 }
             })
         }
     }, [pageNumber, canvasSize, scale])
+
+    useEffect(() => {
+
+    }, [pageNumber])
 
     //filter json file and take words for current page and convert coordinates into px
     useEffect(() => {
@@ -130,14 +138,18 @@ export const PDFReader = () => {
                 getCoordinates(e, parent, setClickPosition)
             } else {
                 clearContextHighlight(contextText, selectedWord.coordinates, scale)
-                const effect = getEffectFromSessionStorageForSelectedWord(selectedWord, pageNumber)
+                const effect = getEffectFromSessionStorageForSelectedWord(selectedWord, pageNumber, scale)
                 if (effect) {
-                    if (effect.type === "underline") {
-                        underlineTextDecoration(contextText, effect.color, effect.coordinates, scale)
-                    } else if (effect.type === "highlight") {
-                        highlightText(contextText, effect.color, effect.coordinates, scale)
+                    const fixEffect = {
+                        ...effect,
+                        coordinates: effect.coordinates.map(c => effect.scale === 1 ? c * scale : (c / effect.scale) * scale)
+                    }
+                    if (fixEffect.type === "underline") {
+                        underlineTextDecoration(contextText, fixEffect.color, fixEffect.coordinates)
+                    } else if (fixEffect.type === "highlight") {
+                        highlightText(contextText, fixEffect.color, fixEffect.coordinates)
                     } else {
-                        lineThroughTextDecoration(contextText, effect.color, effect.coordinates, scale)
+                        lineThroughTextDecoration(contextText, fixEffect.color, fixEffect.coordinates)
                     }
                 }
                 setSelectedWord(null)

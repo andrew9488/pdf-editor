@@ -14,21 +14,21 @@ export const Menu = React.memo(({context, word, scale, clearSelectedWord}) => {
     const underline = () => {
         clearContextHighlight(context, word.coordinates, scale)
         underlineTextDecoration(context, "rgb(17,17,17)", word.coordinates, scale)
-        setEffectsToSessionStorage(word, "rgb(17,17,17)", "underline")
+        setEffectsToSessionStorage(word, "rgb(17,17,17)", "underline", scale)
         clearSelectedWord(null)
     }
 
     const highlight = () => {
         clearContextHighlight(context, word.coordinates, scale)
         highlightText(context, "rgba(234,231,9,0.6)", word.coordinates, scale)
-        setEffectsToSessionStorage(word, "rgba(234,231,9,0.6)", "highlight")
+        setEffectsToSessionStorage(word, "rgba(234,231,9,0.6)", "highlight", scale)
         clearSelectedWord(null)
     }
 
     const lineThrough = () => {
         clearContextHighlight(context, word.coordinates, scale)
         lineThroughTextDecoration(context, "rgb(255,0,11)", word.coordinates, scale)
-        setEffectsToSessionStorage(word, "rgb(255,0,11)", "lineThrough")
+        setEffectsToSessionStorage(word, "rgb(255,0,11)", "lineThrough", scale)
         clearSelectedWord(null)
     }
 
