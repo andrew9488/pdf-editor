@@ -93,7 +93,6 @@ export const PDFReader = () => {
                 ...w,
                 coordinates: fixWordCoordinates(w.coordinates, canvasSize)
             }))
-            console.log(currentWords)
             setWords(currentWords)
         }
     }, [pageNumber, json, canvasSize])
@@ -168,7 +167,7 @@ export const PDFReader = () => {
                     >
                         <Page pageNumber={pageNumber} scale={scale} onRenderSuccess={onRenderSuccess}/>
                     </Document>
-                    <canvas height={canvasSize.height / scale} width={canvasSize.width / scale} ref={canvasRefText}
+                    <canvas height={canvasSize.height} width={canvasSize.width} ref={canvasRefText}
                             className={isTextPointer ? classes.canvasTextCursor : classes.canvasText}
                             onMouseUp={onMouseAction}
                             onMouseMove={onMouseAction}/>
