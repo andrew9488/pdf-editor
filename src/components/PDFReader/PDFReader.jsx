@@ -93,15 +93,10 @@ export const PDFReader = () => {
                 ...w,
                 coordinates: fixWordCoordinates(w.coordinates, canvasSize)
             }))
+            console.log(currentWords)
             setWords(currentWords)
         }
     }, [pageNumber, json, canvasSize])
-
-    useEffect(() => {
-        if (words) {
-            words.forEach(w => canvasHelper(contextText, w))
-        }
-    }, [words])
 
     //function set numbers of pages
     const onDocumentLoadSuccess = useCallback(({numPages}) => {
@@ -114,7 +109,8 @@ export const PDFReader = () => {
             height: docRef.current.clientHeight,
             width: docRef.current.clientWidth
         })
-    }, [])
+        words.forEach(w => canvasHelper(contextText, w))
+    }, [words])
 
     //download pdf file, request to server for get json file and clear session storage
     const loadPdf = useCallback((file) => {
