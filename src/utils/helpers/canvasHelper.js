@@ -1,6 +1,6 @@
 export function canvasHelper(context, word) {
     if (context) {
-        let fontSize = (word.coordinates[3] - word.coordinates[1])
+        let fontSize = Math.ceil(word.coordinates[3] - word.coordinates[1])
         context.font = `${fontSize}px serif`;
         let x = word.coordinates[0]
         let y = (word.coordinates[3])
