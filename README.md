@@ -1,6 +1,23 @@
-# Getting Started with Create React App
+# PDF-editor
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Application stack
+* **React** - react v17.0.2
+* **React-pdf** - react-pdf v5.4.0
+* **Axios** - axios v0.23.0
+* **Bootstrap** - bootstrap 4.5.3
+
+## Quick Start
+```
+git clone https://github.com/andrew9488/pdf-editor
+cd pdf-editor
+
+// if using npm
+npm install
+// if using yarn
+yarn
+```
 
 ## Available Scripts
 
